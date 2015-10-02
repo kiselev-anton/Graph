@@ -13,10 +13,11 @@ os:
 notifications:
   slack: paths2015:FypS2DzZO1DUg83AoDu9RAWq
 
-sudo: false
+sudo: required
 
-addons:
-  apt:
-    packages:
-    - cmake
-    - boost
+before_install:
+    - sudo add-apt-repository ppa:boost-latest/ppa --yes
+    - sudo apt-get update
+
+install:
+    - sudo apt-get install boost1.55
