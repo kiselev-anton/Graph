@@ -2,6 +2,8 @@
 #include <fstream>
 #include <vector>
 #include <boost/algorithm/string.hpp>
+#include <stdlib.h>
+#include <string>
 
 #if defined(_MSC_VER) && _MSC_VER >= 1400 
 #pragma warning(push) 
@@ -35,8 +37,8 @@ int main(int argc, char * argv[])
         exit(WRONG_FILE_FORMAT);
     }
 
-    long n = std::stol(splitted[2]);
-    long m = std::stol(splitted[3]);
+    long n = std::atoi(splitted[2].c_str());
+    long m = std::atoi(splitted[3].c_str());
     Graph graph = Graph(n, m);
 
     long k = 0;
@@ -49,7 +51,7 @@ int main(int argc, char * argv[])
             k++;
 
             if (splitted[0].compare("a") == 0)
-                graph.Add(std::stoi(splitted[2]), std::stoi(splitted[1]));
+                graph.Add(std::atoi(splitted[2].c_str()), std::atoi(splitted[1].c_str()));
             else continue;
         }
     }
@@ -57,7 +59,59 @@ int main(int argc, char * argv[])
     cout << "added\n";
 
     cout << mActually(graph) << endl;
+
+    std::clock_t start;
+    start = std::clock();
+
     cout << oneDirectedNum(graph) << endl;
-    cin.get();
+
+    double duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+    cout << "seconds to count one directed" << duration << endl;
+
+    start = std::clock();
+
+    long* inPowers = GetInPowers(graph);
+    long* outPowers = GetOutPowers(graph);
+
+    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+    cout << "seconds to count in and out powers" << duration << endl;
+
+
+    for (int i = 0; i < graph.vertexCount + 1; ++i)
+    {
+        //cout << inPowers[i] << " ";
+    }
+
+    cout << "\n";
+
+    for (int i = 0; i < graph.vertexCount + 1; ++i)
+    {
+        //cout << outPowers[i] << " ";
+    }
+
+    start = std::clock();
+
+    long sum = 0;
+    long average = 0;
+    long max = 0;
+    long min = graph.vertexCount;
+    for (int i = 1; i < graph.vertexCount + 1; ++i)
+    {
+        if(inPowers[i] + outPowers[i] < min)
+            min = inPowers[i] + outPowers[i];
+
+        if(inPowers[i] + outPowers[i] > max)
+            max = inPowers[i] + outPowers[i];
+
+        sum += inPowers[i] + outPowers[i];
+    }
+    average = sum / graph.vertexCount;
+
+    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+    cout << "seconds to count statistics" << duration << endl;
+
+    cout <<"statistics: average " << average << " min " << min << " max " << max;
+
+    //cin.get();
     return 0;
 }
